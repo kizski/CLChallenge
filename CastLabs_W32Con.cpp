@@ -338,8 +338,8 @@ int _tmain(int argc, _TCHAR* argv[])
 					if (iLetter <= 0)
 						isTypeMdat = true;
 
-					//filePos.positionOffset_2findBytesInBox = filePos.position - filePos.positionOffsetForWord;
-					streampos positionGetBytes =  filePos.position - filePos.positionOffset_2findBytesInBox - filePos.positionOffset1;
+					streampos positionGetBytes = filePos.position - filePos.positionOffsetForWord;
+					//streampos positionGetBytes =  filePos.position - filePos.positionOffset_2findBytesInBox - filePos.positionOffset1;
 					//filePos.positionOffset_2findBytesInBox = filePos.position - filePos.positionOffset_2findBytesInBox;
 
 					myFile.seekg(positionGetBytes);
@@ -352,33 +352,34 @@ int _tmain(int argc, _TCHAR* argv[])
 					//*****                              `-'         
 					double dNumBytesInBox=0;
 
-					for (int ibyte=1; ibyte <= 2; ibyte++)
+					for (int ibyte=1; ibyte <= 4; ibyte++)
 					{
 						filePos.positionTemp = myFile.tellg();
+
+						//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+						//&&&&&            READ             &&&&&
+						//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 						cuCharRead = myFile.get(); // re-read character for # Bytes in Box
+
 						filePos.position = myFile.tellg();
 
-						//		cout << "Adding bytes to determine box size -- this is byte # " << ibyte << endl;
+						//cout << "Adding bytes to determine box size -- this is byte # " << ibyte << endl;
 						unsigned int uInt = (int)  cuCharRead;
 
 						double weAdded=0; 
 
-						if (ibyte == 2)
+						if (ibyte == 4)
 							weAdded =  Byte2Decimal_perByte( uInt, 7 );
-						else if (ibyte==1)
-							weAdded =   Byte2Decimal_perByte( uInt, 15 );
-
-						//******************************* leave the following code in case we want to add in a word
-						//                                instead of 2 bytes
-						/*
-						if (ibyte == 2)
+						else if (ibyte == 3)
+							weAdded =  Byte2Decimal_perByte( uInt, 15 );
+						else if (ibyte == 2)
 							weAdded =  Byte2Decimal_perByte( uInt, 23 );
-						else if (ibyte==1)
-							weAdded =   Byte2Decimal_perByte( uInt, 31 );
-*/ 
+						else if (ibyte == 1)
+							weAdded =  Byte2Decimal_perByte( uInt, 31 );
+
 						dNumBytesInBox = dNumBytesInBox + weAdded;
 
-					//	PrintCurrentByte_inBinary( cuCharRead, filePos.positionTemp);
+						//PrintCurrentByte_inBinary( cuCharRead, filePos.positionTemp);
 					}
 
  					cout << "Found box of type " << Type << " and size " << dNumBytesInBox << endl;
@@ -386,8 +387,8 @@ int _tmain(int argc, _TCHAR* argv[])
 				//*****    .-. .-. .-. .-. .-. .-. .-. .-. .-. . . 
 				//*****    |(  |-  |-' | | `-.  |   |   |  | | |\| 
 				//*****    ' ' `-' '   `-' `-' `-'  '  `-' `-' ' ` 
-				//*****----------------------------------------------- Move back to original filePos.position  
-				myFile.seekg(filePos.positionAfterType);
+				//*****----------------------------------------------- Move back to original filePos.position after Type  
+				myFile.seekg(filePos.positionAfterType); 
 
 				//*************************** done with this box, now clear out & start over
 				iNumContigCharsFound = 0;
